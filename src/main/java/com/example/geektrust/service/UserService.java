@@ -35,4 +35,8 @@ public class UserService {
     public boolean checkUserLimit(){
         return userRepository.count() < 3;
     }
+
+    public User findByUserName(String userName){
+        return userRepository.findByUserName(userName);
+    }
 }
