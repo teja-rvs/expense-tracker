@@ -78,19 +78,26 @@ public class ExpenseService {
                 }
             }
         }
+        List<ExpenseDue> dues = calculateDues(positiveBalances, negativeBalances);
+        expense.setDues(dues);
+    }
+
+    public List<ExpenseDue> calculateDues(List<Balance> positiveBalances, List<Balance> negativeBalances){
         List<ExpenseDue> dues = new ArrayList();
         int p = 0;
         int n = 0;
-        System.out.println("DUES");
         while(p < positiveBalances.size() && n < negativeBalances.size()){
             Balance positiveUser = positiveBalances.get(p);
             int positiveAmount = positiveUser.getAmount();
+            Balance negativeUser = negativeBalances.get(n);
+            int negativeAmount = negativeUser.getAmount();
             if(positiveAmount == 0){
                 p++;
             }
+            else if(negativeAmount == 0){
+                n++;
+            }
             else{
-                Balance negativeUser = negativeBalances.get(n);
-                int negativeAmount = negativeUser.getAmount();
                 int balance = positiveAmount - negativeAmount;
                 if(balance >= 0){
                     ExpenseDue expenseDue = new ExpenseDue(negativeUser.getUser(), positiveUser.getUser(), negativeAmount);
@@ -106,7 +113,7 @@ public class ExpenseService {
                 }
             }
         }
-        expense.setDues(dues);
+        return dues;
     }
 
     public void print(Expense expense) {
