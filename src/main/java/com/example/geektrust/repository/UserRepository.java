@@ -27,4 +27,8 @@ public class UserRepository {
     public User findByUserName(String userName){
         return userMap.get(userName);
     }
+
+    public int count(){
+        return userMap.size();
+    }
 }
