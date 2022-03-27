@@ -2,7 +2,9 @@ package com.example.geektrust;
 
 import com.example.geektrust.model.Command;
 import com.example.geektrust.model.Expense;
+import com.example.geektrust.model.User;
 import com.example.geektrust.service.ExpenseService;
+import com.example.geektrust.service.TotalDueService;
 import com.example.geektrust.service.UserService;
 
 import java.io.File;
@@ -15,6 +17,7 @@ public class Main {
         String file = args[0];
         UserService userService = new UserService();
         ExpenseService expenseService = new ExpenseService();
+        TotalDueService totalDueService = new TotalDueService();
         try{
             Scanner scan = new Scanner(new File(file));
             while(scan.hasNextLine()){
@@ -34,11 +37,17 @@ public class Main {
                             expenseService.addContributors(expense, contributors);
                             expenseService.generateSplits(expense, users);
                             expenseService.generateDues(expense);
-                            expenseService.print(expense);
+//                            expenseService.print(expense);
+                            expenseService.simplifyDues(expense);
+                            totalDueService.updateFinalDues();
                         }
                         else{
                             System.out.println("MEMBER_NOT_FOUND");
                         }
+                        break;
+                    case DUES:
+                        User user = userService.findByUserName(commands[1]);
+                        totalDueService.getUserDues(user.getUserName());
                         break;
                     default:
                         System.out.println("INVALID COMMAND");

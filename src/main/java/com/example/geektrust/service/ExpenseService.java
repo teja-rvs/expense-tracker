@@ -14,10 +14,12 @@ public class ExpenseService {
 
     private ExpenseRepository expenseRepository;
     private UserService userService;
+    private DebtGraph debtGraph;
 
     public ExpenseService(){
         this.expenseRepository = ExpenseRepository.getInstance();
         this.userService = new UserService();
+        this.debtGraph = DebtGraph.getInstance();
     }
 
     public boolean validateExpenseUsers(String[] users){
@@ -129,5 +131,14 @@ public class ExpenseService {
         for(ExpenseDue expenseDue : expense.getDues()){
             System.out.println(expenseDue.getBorrower().getUserName() + "->" + expenseDue.getLender().getUserName() + " " + expenseDue.getAmount());
         }
+    }
+
+    public void simplifyDues(Expense expense) {
+        for(ExpenseDue due: expense.getDues()){
+            String lenderName = due.getLender().getUserName();
+            String borrowerName = due.getBorrower().getUserName();
+            debtGraph.addDebt(borrowerName, lenderName, due.getAmount());
+        }
+        debtGraph.simplifyGraph();
     }
 }

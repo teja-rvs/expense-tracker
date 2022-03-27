@@ -31,4 +31,8 @@ public class UserRepository {
     public int count(){
         return userMap.size();
     }
+
+    public Map<String, User> getAllUsers() {
+        return userMap;
+    }
 }
