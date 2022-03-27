@@ -28,6 +28,15 @@ public class DebtGraph {
         graph.putIfAbsent(node, edges);
     }
 
+    public void removeNode(String node){
+        graph.remove(node);
+        for (Map.Entry<String, Map<String, Integer>> edge : graph.entrySet()) {
+            if(edge.getValue().containsKey(node)){
+                edge.getValue().remove(node);
+            }
+        }
+    }
+
     public void addEdge(String source, String destination, int weight){
         Map<String, Integer> edges = graph.get(source);
         if(edges.containsKey(destination)){
@@ -91,14 +100,6 @@ public class DebtGraph {
                 }
                 i++;
             }
-        }
-//        printGraph();
-    }
-
-    public void printGraph(){
-        for (Map.Entry<String, Map<String, Integer>> node : graph.entrySet()) {
-            for (Map.Entry<String, Integer> child : node.getValue().entrySet())
-                System.out.println(node.getKey() + " " + child.getKey() + " " + child.getValue());
         }
     }
 

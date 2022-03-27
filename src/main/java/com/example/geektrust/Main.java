@@ -3,9 +3,7 @@ package com.example.geektrust;
 import com.example.geektrust.model.Command;
 import com.example.geektrust.model.Expense;
 import com.example.geektrust.model.User;
-import com.example.geektrust.service.ExpenseService;
-import com.example.geektrust.service.TotalDueService;
-import com.example.geektrust.service.UserService;
+import com.example.geektrust.service.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -18,6 +16,8 @@ public class Main {
         UserService userService = new UserService();
         ExpenseService expenseService = new ExpenseService();
         TotalDueService totalDueService = new TotalDueService();
+        ClearDueService clearDueService = new ClearDueService();
+        MoveOutService moveOutService = new MoveOutService();
         try{
             Scanner scan = new Scanner(new File(file));
             while(scan.hasNextLine()){
@@ -37,7 +37,6 @@ public class Main {
                             expenseService.addContributors(expense, contributors);
                             expenseService.generateSplits(expense, users);
                             expenseService.generateDues(expense);
-//                            expenseService.print(expense);
                             expenseService.simplifyDues(expense);
                             totalDueService.updateFinalDues();
                         }
@@ -48,6 +47,21 @@ public class Main {
                     case DUES:
                         User user = userService.findByUserName(commands[1]);
                         totalDueService.getUserDues(user.getUserName());
+                        break;
+                    case CLEAR_DUE:
+                        User payer = userService.findByUserName(commands[1]);
+                        User payee = userService.findByUserName(commands[2]);
+                        int payment = Integer.parseInt(commands[3]);
+                        clearDueService.settle(payer, payee, payment * -1);
+                        break;
+                    case MOVE_OUT:
+                        User mover = userService.findByUserName(commands[1]);
+                        if(mover == null){
+                            System.out.println("MEMBER_NOT_FOUND");
+                        }
+                        else{
+                            moveOutService.move_out(mover);
+                        }
                         break;
                     default:
                         System.out.println("INVALID COMMAND");
@@ -60,8 +74,3 @@ public class Main {
 
     }
 }
-
-
-//public static void readText throws FileNotFoundException {
-//
-//

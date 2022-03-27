@@ -82,6 +82,7 @@ public class ExpenseService {
         }
         List<ExpenseDue> dues = calculateDues(positiveBalances, negativeBalances);
         expense.setDues(dues);
+        System.out.println("SUCCESS");
     }
 
     public List<ExpenseDue> calculateDues(List<Balance> positiveBalances, List<Balance> negativeBalances){
@@ -116,21 +117,6 @@ public class ExpenseService {
             }
         }
         return dues;
-    }
-
-    public void print(Expense expense) {
-        System.out.println("CONTRIBUTORS");
-        for (Map.Entry<String, Contribution> entry : expense.getContributions().entrySet()) {
-            System.out.println(entry.getKey() + " " + entry.getValue().getAmount());
-        }
-        System.out.println("SPLITS");
-        for (Map.Entry<String, Split> entry : expense.getSplits().entrySet()) {
-            System.out.println(entry.getKey() + " " + entry.getValue().getAmount());
-        }
-        System.out.println("DUES");
-        for(ExpenseDue expenseDue : expense.getDues()){
-            System.out.println(expenseDue.getBorrower().getUserName() + "->" + expenseDue.getLender().getUserName() + " " + expenseDue.getAmount());
-        }
     }
 
     public void simplifyDues(Expense expense) {

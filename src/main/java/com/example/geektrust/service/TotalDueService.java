@@ -55,4 +55,20 @@ public class TotalDueService {
             }
         }
     }
+
+    public void getPayerPayeeDues(String payer, String payee){
+        Map<String, Map<String, Integer>> finalDues = totalDueRepository.getFinalDues();
+        int amount = finalDues.get(payer).get(payee);
+        System.out.println(amount);
+    }
+
+    public void removeUser(String userName){
+        Map<String, Map<String, Integer>> finalDues = totalDueRepository.getFinalDues();
+        finalDues.remove(userName);
+        for (Map.Entry<String, Map<String, Integer>> node : finalDues.entrySet()) {
+            if(node.getValue().containsKey(userName)){
+                node.getValue().remove(userName);
+            }
+        }
+    }
 }
