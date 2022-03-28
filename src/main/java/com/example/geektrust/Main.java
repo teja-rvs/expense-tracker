@@ -11,38 +11,41 @@ import java.util.Scanner;
 import java.util.Arrays;
 
 public class Main {
-    public static void main(String[] args) throws FileNotFoundException {
+    public static void main(String[] args) {
         String file = args[0];
         UserService userService = new UserService();
         ExpenseService expenseService = new ExpenseService();
         TotalDueService totalDueService = new TotalDueService();
         ClearDueService clearDueService = new ClearDueService();
         MoveOutService moveOutService = new MoveOutService();
-        try{
+        try {
             Scanner scan = new Scanner(new File(file));
-            while(scan.hasNextLine()){
+            while (scan.hasNextLine()) {
                 String line = scan.nextLine();
                 String[] commands = line.split(" ");
-                switch (Command.of(commands[0])){
+                switch (Command.of(commands[0])) {
                     case MOVE_IN:
                         String userName = commands[1];
                         userService.addUser(userName);
                         break;
                     case SPEND:
                         int amount = Integer.parseInt(commands[1]);
-                        String[] users = Arrays.copyOfRange(commands, 2, commands.length);
-                        if (expenseService.validateExpenseUsers(users)){
-                            Expense expense = expenseService.addExpense(amount);
-                            String contributors = commands[2];
-                            expenseService.addContributors(expense, contributors);
-                            expenseService.generateSplits(expense, users);
-                            expenseService.generateDues(expense);
-                            expenseService.simplifyDues(expense);
-                            totalDueService.updateFinalDues();
-                        }
-                        else{
-                            System.out.println("MEMBER_NOT_FOUND");
-                        }
+                        String[] userNames = Arrays.copyOfRange(commands, 2, commands.length);
+                        userService.validUsers(userNames)
+                                .ifPresentOrElse(
+                                        users -> {
+                                            String contributors = commands[2];
+                                            Expense expense = new Expense
+                                                    .ExpenseBuilder(amount)
+                                                    .contributor(userService.findByUserName(contributors))
+                                                    .generateSplits(users)
+                                                    .generateDues()
+                                                    .build();
+                                            expenseService.addExpense(expense);
+                                            expenseService.simplifyDues(expense);
+                                            totalDueService.updateFinalDues();
+                                        },
+                                        () -> System.out.println("MEMBER_NOT_FOUND"));
                         break;
                     case DUES:
                         User user = userService.findByUserName(commands[1]);
@@ -56,10 +59,9 @@ public class Main {
                         break;
                     case MOVE_OUT:
                         User mover = userService.findByUserName(commands[1]);
-                        if(mover == null){
+                        if (mover == null) {
                             System.out.println("MEMBER_NOT_FOUND");
-                        }
-                        else{
+                        } else {
                             moveOutService.move_out(mover);
                         }
                         break;
@@ -67,8 +69,7 @@ public class Main {
                         System.out.println("INVALID COMMAND");
                 }
             }
-        }
-        catch (FileNotFoundException ex){
+        } catch (FileNotFoundException ex) {
             System.out.println("File Not Found");
         }
 

@@ -7,11 +7,12 @@ import com.example.geektrust.repository.UserRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class UserService {
-    private UserRepository userRepository;
-    private TotalDueService totalDueService = new TotalDueService();
-    private  DebtGraph debtGraph;
+    private final UserRepository userRepository;
+    private final TotalDueService totalDueService = new TotalDueService();
+    private final DebtGraph debtGraph;
 
     public UserService(){
         this.userRepository = UserRepository.getInstance();
@@ -41,7 +42,7 @@ public class UserService {
         }
     }
 
-    public boolean checkUserLimit(){
+    private boolean checkUserLimit(){
         return userRepository.count() < 3;
     }
 
@@ -49,7 +50,13 @@ public class UserService {
         return userRepository.findByUserName(userName);
     }
 
-    public List<User> getAllUsers(){
-        return new ArrayList(userRepository.getAllUsers().values());
+    public Optional<User[]> validUsers(String[] userNames) {
+        List<User> users = new ArrayList<>(userNames.length);
+        for(String userName: userNames){
+            User user = findByUserName(userName);
+            if(user == null) return null;
+            users.add(user);
+        }
+        return Optional.of((User[])users.toArray());
     }
 }
